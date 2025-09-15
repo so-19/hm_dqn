@@ -1,0 +1,345 @@
+
+<?xml version="1.0"?>
+<robot name="autonomous_uav">
+  
+  <!-- Base Link (Main Body) -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.4 0.4 0.1"/>
+      </geometry>
+      <material name="body_color">
+        <color rgba="0.2 0.2 0.8 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.4 0.4 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.0"/>
+      <inertia ixx="0.033" ixy="0" ixz="0" iyy="0.033" iyz="0" izz="0.064"/>
+    </inertial>
+  </link>
+
+  <!-- Front Left Propeller Arm -->
+  <link name="front_left_arm">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+      <material name="arm_color">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.00075" ixy="0" ixz="0" iyy="0.00075" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <!-- Front Right Propeller Arm -->
+  <link name="front_right_arm">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+      <material name="arm_color">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.00075" ixy="0" ixz="0" iyy="0.00075" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <!-- Rear Left Propeller Arm -->
+  <link name="rear_left_arm">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+      <material name="arm_color">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.00075" ixy="0" ixz="0" iyy="0.00075" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <!-- Rear Right Propeller Arm -->
+  <link name="rear_right_arm">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+      <material name="arm_color">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.01" length="0.3"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.00075" ixy="0" ixz="0" iyy="0.00075" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <!-- Front Left Propeller -->
+  <link name="front_left_propeller">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+      <material name="propeller_color">
+        <color rgba="0.8 0.8 0.8 0.8"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.00016" ixy="0" ixz="0" iyy="0.00016" iyz="0" izz="0.00032"/>
+    </inertial>
+  </link>
+
+  <!-- Front Right Propeller -->
+  <link name="front_right_propeller">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+      <material name="propeller_color">
+        <color rgba="0.8 0.8 0.8 0.8"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.00016" ixy="0" ixz="0" iyy="0.00016" iyz="0" izz="0.00032"/>
+    </inertial>
+  </link>
+
+  <!-- Rear Left Propeller -->
+  <link name="rear_left_propeller">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+      <material name="propeller_color">
+        <color rgba="0.8 0.8 0.8 0.8"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.00016" ixy="0" ixz="0" iyy="0.00016" iyz="0" izz="0.00032"/>
+    </inertial>
+  </link>
+
+  <!-- Rear Right Propeller -->
+  <link name="rear_right_propeller">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+      <material name="propeller_color">
+        <color rgba="0.8 0.8 0.8 0.8"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.08" length="0.005"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.00016" ixy="0" ixz="0" iyy="0.00016" iyz="0" izz="0.00032"/>
+    </inertial>
+  </link>
+
+  <!-- Camera/Sensor Module -->
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.03"/>
+      </geometry>
+      <material name="camera_color">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.03"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.00004" ixy="0" ixz="0" iyy="0.00004" iyz="0" izz="0.00004"/>
+    </inertial>
+  </link>
+
+  <!-- IMU Sensor -->
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.02 0.02 0.01"/>
+      </geometry>
+      <material name="imu_color">
+        <color rgba="0.0 1.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.02 0.02 0.01"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.02"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <!-- Joints -->
+  
+  <!-- Front Left Arm Joint -->
+  <joint name="front_left_arm_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_left_arm"/>
+    <origin xyz="0.15 0.15 0" rpy="0 1.5708 0.7854"/>
+  </joint>
+
+  <!-- Front Right Arm Joint -->
+  <joint name="front_right_arm_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_right_arm"/>
+    <origin xyz="0.15 -0.15 0" rpy="0 1.5708 -0.7854"/>
+  </joint>
+
+  <!-- Rear Left Arm Joint -->
+  <joint name="rear_left_arm_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="rear_left_arm"/>
+    <origin xyz="-0.15 0.15 0" rpy="0 1.5708 2.3562"/>
+  </joint>
+
+  <!-- Rear Right Arm Joint -->
+  <joint name="rear_right_arm_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="rear_right_arm"/>
+    <origin xyz="-0.15 -0.15 0" rpy="0 1.5708 -2.3562"/>
+  </joint>
+
+  <!-- Front Left Propeller Joint -->
+  <joint name="front_left_propeller_joint" type="continuous">
+    <parent link="front_left_arm"/>
+    <child link="front_left_propeller"/>
+    <origin xyz="0.15 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Front Right Propeller Joint -->
+  <joint name="front_right_propeller_joint" type="continuous">
+    <parent link="front_right_arm"/>
+    <child link="front_right_propeller"/>
+    <origin xyz="0.15 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Rear Left Propeller Joint -->
+  <joint name="rear_left_propeller_joint" type="continuous">
+    <parent link="rear_left_arm"/>
+    <child link="rear_left_propeller"/>
+    <origin xyz="0.15 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Rear Right Propeller Joint -->
+  <joint name="rear_right_propeller_joint" type="continuous">
+    <parent link="rear_right_arm"/>
+    <child link="rear_right_propeller"/>
+    <origin xyz="0.15 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Camera Joint -->
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.2 0 -0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- IMU Joint -->
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0.02" rpy="0 0 0"/>
+  </joint>
+
+</robot>

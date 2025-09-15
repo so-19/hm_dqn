@@ -1,0 +1,14 @@
+pybullet
+torch
+torchvision
+numpy
+opencv-python
+tqdm
+groundingdino
+timm>=0.9.7
+transformers>=4.39.0
+huggingface-hub>=0.20.0
+addict
+omegaconf
+opencv-python
+Pillow
