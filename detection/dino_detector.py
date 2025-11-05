@@ -2,7 +2,8 @@ import torch
 import numpy as np
 from PIL import Image
 from torchvision import transforms
-from ..config import DET
+from config import DET
+#from ..config import DET
 try:
     from groundingdino.util.inference import load_model, predict
 except Exception as e:
