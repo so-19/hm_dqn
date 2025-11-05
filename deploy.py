@@ -3,7 +3,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
 from detection.dino_detector import ObstacleDetector
-from uav_hm_dqn.envs.pybullet_envs import make_task, AVOIDANCE_SET
+#from uav_hm_dqn.envs.pybullet_envs import make_task, AVOIDANCE_SET
+from envs import make_task, AVOIDANCE_SET
 from rl.networks import StrategicDQN, TacticalDQN
 from rl.agents import DQNAgent
 from config import ENV, META, RL
