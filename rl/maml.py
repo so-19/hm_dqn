@@ -4,12 +4,15 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import copy
 import numpy as np
 import torch
-from .agents import DQNAgent
-from .networks import StrategicDQN, TacticalDQN
-from ..config import META
+from rl.agents import DQNAgent
+from rl.networks import StrategicDQN, TacticalDQN
+from config import META
 from drone import Drone
-from uav_hm_dqn.envs.pybullet_envs import AVOIDANCE_SET
-def inner_loop(env, strat_agent: DQNAgent, tact_agent: DQNAgent, steps: int, batch_size: int, meta_cfg=META, task_id=0, meta_iter=0):
+from envs.pybullet_envs import AVOIDANCE_SET
+from logging_utils import log_step, end_episode
+_GLOBAL_EPISODE_COUNTER = 0
+def inner_loop(env, strat_agent: DQNAgent, tact_agent: DQNAgent, steps: int, batch_size: int, meta_cfg=META, task_id=0, meta_iter=0, writer=None):
+    global _GLOBAL_EPISODE_COUNTER
     obs = env.reset()
     ep_steps = 0
     episode_count = 0
@@ -35,15 +38,25 @@ def inner_loop(env, strat_agent: DQNAgent, tact_agent: DQNAgent, steps: int, bat
         tact_agent.push(l, aL, step.reward, l2, step.done)
         strat_loss = strat_agent.update(batch_size)
         tact_loss = tact_agent.update(batch_size)
-        if strat_loss > 0:
+        if strat_loss is not None and strat_loss > 0:
             strat_losses.append(strat_loss)
-        if tact_loss > 0:
+        if tact_loss is not None and tact_loss > 0:
             tact_losses.append(tact_loss)
         episode_reward += step.reward
         total_reward += step.reward
+        env_info = {}
+        try:
+            if hasattr(step, 'info'):
+                env_info = getattr(step, 'info') or {}
+        except Exception:
+            env_info = {}
+        env_info.setdefault('done', bool(step.done))
+        log_step(step.reward, action=act_final, env_info=env_info, strat_loss=strat_loss, tact_loss=tact_loss)
         obs = step.obs; ep_steps += 1
         if step.done:
             episode_count += 1
+            _GLOBAL_EPISODE_COUNTER += 1
+            end_episode(_GLOBAL_EPISODE_COUNTER, strat_agent.eps, writer=writer)
             if episode_count % 5 == 0:
                 avg_strat_loss = np.mean(strat_losses) if strat_losses else 0.0
                 avg_tact_loss = np.mean(tact_losses) if tact_losses else 0.0
@@ -60,12 +73,11 @@ def inner_loop(env, strat_agent: DQNAgent, tact_agent: DQNAgent, steps: int, bat
           f"Avg losses - Strat: {avg_strat_loss:.4f}, Tact: {avg_tact_loss:.4f}")
     return avg_strat_loss, avg_tact_loss, avg_episode_reward
 
-def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0):
+def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0, writer=None):
     start_time = time.time()
     torch.manual_seed(seed); np.random.seed(seed)
     H_in, L_in = obs_dims
     nA = 3
-
     print(f"\nStarting Meta-Learning Training")
     print(f"Configuration:")
     print(f"   - Meta iterations: {meta_cfg.meta_iters}")
@@ -99,7 +111,7 @@ def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0)
             fL = TacticalDQN(L_in, nA); fL.load_state_dict(qL.state_dict())
             aH = DQNAgent(fH, H_in, nA)
             aL = DQNAgent(fL, L_in, nA)
-            avg_strat_loss, avg_tact_loss, avg_reward = inner_loop(env, aH, aL, steps=meta_cfg.inner_steps * 300, batch_size=64, meta_cfg=meta_cfg, task_id=t, meta_iter=it)
+            avg_strat_loss, avg_tact_loss, avg_reward = inner_loop(env, aH, aL, steps=meta_cfg.inner_steps * 300, batch_size=64, meta_cfg=meta_cfg, task_id=t, meta_iter=it, writer=writer)
             batch_strat_losses.append(avg_strat_loss)
             batch_tact_losses.append(avg_tact_loss)
             batch_rewards.append(avg_reward)
@@ -123,6 +135,14 @@ def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0)
         print(f"   Tactical Loss:  {batch_avg_tact_loss:.4f}")
         print(f"   Average Reward: {batch_avg_reward:.2f}")
         print(f"   Iteration Time: {iter_time:.1f}s")
+        if writer is not None:
+            try:
+                writer.add_scalar('meta/strategic_loss', batch_avg_strat_loss, it)
+                writer.add_scalar('meta/tactical_loss', batch_avg_tact_loss, it)
+                writer.add_scalar('meta/avg_reward', batch_avg_reward, it)
+                writer.flush()
+            except Exception:
+                pass
         if (it+1) % 10 == 0:
             recent_strat_loss = np.mean(all_strat_losses[-10:])
             recent_tact_loss = np.mean(all_tact_losses[-10:])
