@@ -6,10 +6,13 @@ import numpy as np
 import time
 from dataclasses import dataclass
 from typing import Tuple, Dict, Any, Optional
-from uav_hm_dqn.config import ENV, REW
-from uav_hm_dqn.utils.occupancy import compute_local_features
+#from uav_hm_dqn.config import ENV, REW
+#from uav_hm_dqn.utils.occupancy import compute_local_features
+from config import ENV, REW
+from utils.occupancy import compute_local_features
 try:
-    from uav_hm_dqn.drone import Drone
+    #from uav_hm_dqn.drone import Drone
+    from drone import Drone
 except Exception:
     Drone = None
 @dataclass
@@ -58,7 +61,6 @@ class UAVWorld:
             p.disconnect(self.client)
             self.client = None
     def step(self, action: int) -> StepReturn:
-        # Forward to drone
         self._apply_action(action)
         for _ in range(4):
             p.stepSimulation()
@@ -81,7 +83,6 @@ class UAVWorld:
                 vis = p.createVisualShape(p.GEOM_CYLINDER, radius=s, length=h, rgbaColor=[0.4,0.4,0.4,1])
             p.createMultiBody(baseMass=0, baseCollisionShapeIndex=col, baseVisualShapeIndex=vis,
                               basePosition=[x, y, h/2])
-
     def _spawn_drone(self):
         init_pos = [*self._rand_xy(), 1.0]
         init_orn = p.getQuaternionFromEuler([0,0,self.rng.uniform(-np.pi, np.pi)])
