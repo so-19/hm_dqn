@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from collections import deque, namedtuple
-from ..config import RL
+from config import RL
 Transition = namedtuple("Transition", "s a r s2 d")
 class ReplayBuffer:
     def __init__(self, capacity: int):
