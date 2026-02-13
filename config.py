@@ -2,7 +2,8 @@ from dataclasses import dataclass
 import os
 @dataclass
 class EnvConfig:
-    gui: bool = False                    
+    # Set to False to run headless (no window, faster).
+    gui: bool = True                    
     hz: int = 60           
     max_steps: int = 1200                
     world_size: float = 10.0    
@@ -19,7 +20,6 @@ class EnvConfig:
     drone_urdf: str | None = os.path.join(
         os.path.dirname(__file__), "assets", "drone.urdf"
     )
-    gui = False                          
     use_drone_py: bool = True
 
 @dataclass
