@@ -1,4 +1,4 @@
-import os, sys, torch
+import os, sys, torch, gc
 import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import copy
@@ -107,22 +107,31 @@ def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0,
         for t in range(meta_cfg.tasks_per_batch):
             print(f"\n Task {t+1}/{meta_cfg.tasks_per_batch} (Meta-iter {it+1})")
             env = task_maker(seed + it*131 + t, det_fn=det_fn)
-            fH = StrategicDQN(H_in, nA); fH.load_state_dict(qH.state_dict())
-            fL = TacticalDQN(L_in, nA); fL.load_state_dict(qL.state_dict())
-            aH = DQNAgent(fH, H_in, nA)
-            aL = DQNAgent(fL, L_in, nA)
-            avg_strat_loss, avg_tact_loss, avg_reward = inner_loop(env, aH, aL, steps=meta_cfg.inner_steps * 300, batch_size=64, meta_cfg=meta_cfg, task_id=t, meta_iter=it, writer=writer)
-            batch_strat_losses.append(avg_strat_loss)
-            batch_tact_losses.append(avg_tact_loss)
-            batch_rewards.append(avg_reward)
-            with torch.no_grad():
-                for p, fp in zip(qH.parameters(), fH.parameters()):
-                    p.grad = (p - fp).detach()
-                for p, fp in zip(qL.parameters(), fL.parameters()):
-                    p.grad = (p - fp).detach()
-            optH.step(); optH.zero_grad(set_to_none=True)
-            optL.step(); optL.zero_grad(set_to_none=True)
-            env.close()
+            try:
+                fH = StrategicDQN(H_in, nA); fH.load_state_dict(qH.state_dict())
+                fL = TacticalDQN(L_in, nA); fL.load_state_dict(qL.state_dict())
+                aH = DQNAgent(fH, H_in, nA)
+                aL = DQNAgent(fL, L_in, nA)
+                avg_strat_loss, avg_tact_loss, avg_reward = inner_loop(env, aH, aL, steps=meta_cfg.inner_steps * 300, batch_size=64, meta_cfg=meta_cfg, task_id=t, meta_iter=it, writer=writer)
+                batch_strat_losses.append(avg_strat_loss)
+                batch_tact_losses.append(avg_tact_loss)
+                batch_rewards.append(avg_reward)
+                with torch.no_grad():
+                    for p_param, fp in zip(qH.parameters(), fH.parameters()):
+                        p_param.grad = (p_param - fp).detach()
+                    for p_param, fp in zip(qL.parameters(), fL.parameters()):
+                        p_param.grad = (p_param - fp).detach()
+                optH.step(); optH.zero_grad(set_to_none=True)
+                optL.step(); optL.zero_grad(set_to_none=True)
+            except Exception as e:
+                print(f"  [WARNING] Task {t+1} crashed: {e}. Skipping task, continuing training.")
+            finally:
+                try:
+                    env.close()
+                except Exception:
+                    pass
+                gc.collect()
+                torch.cuda.empty_cache()  # release VRAM fragments after each task
         batch_avg_strat_loss = np.mean(batch_strat_losses)
         batch_avg_tact_loss = np.mean(batch_tact_losses)
         batch_avg_reward = np.mean(batch_rewards)
@@ -155,6 +164,12 @@ def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0,
             print(f"   Avg Reward:         {recent_reward:.2f}")
             print(f"   Progress: {it+1}/{meta_cfg.meta_iters} ({100*(it+1)/meta_cfg.meta_iters:.1f}%)")
             print(f"   Elapsed Time: {elapsed_time/60:.1f}min | ETA: {eta/60:.1f}min")
+        # Checkpoint every 10 meta-iterations 
+        if (it + 1) % 10 == 0:
+            os.makedirs("checkpoints", exist_ok=True)
+            torch.save(qH.state_dict(), f"checkpoints/strategic_iter{it+1}.pth")
+            torch.save(qL.state_dict(), f"checkpoints/tactical_iter{it+1}.pth")
+            print(f"   Checkpoint saved at iter {it+1}.")
 
     total_time = time.time() - start_time
     print(f"\n Training Complete!")

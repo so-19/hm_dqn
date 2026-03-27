@@ -1,0 +1,10 @@
+detection/__pycache__/
+envs/__pycache__/
+rl/__pycache__/
+utils/__pycache__/
+__pycache__/
+**/__pycache__/
+*.pyc
+**/*.pyc
+runs/
+logs/

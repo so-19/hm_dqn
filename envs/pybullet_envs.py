@@ -36,6 +36,10 @@ class UAVWorld:
         self._last_dist = None
         self._last_action: Optional[int] = None
         self._last_vel = np.zeros(3, dtype=np.float32)
+        # Step-level cache — populated in step(), shared by _get_obs + _compute_reward_done
+        self._cached_img_rgb = None
+        self._cached_obstacle_present = False
+        self._cached_clearances = (8.0, 8.0, 8.0)
 
     def reset(self):
         if self.client is None:
@@ -67,9 +71,20 @@ class UAVWorld:
             if self.cfg.gui:
                 time.sleep(0.0)
         self.step_count += 1
+        # Compute once and cache
+        pos, orn = p.getBasePositionAndOrientation(self._drone_body)
+        yaw = p.getEulerFromQuaternion(orn)[2]
+        if self._drone is not None:
+            img_rgb = self._drone.camera_rgb()
+        else:
+            img_rgb = self._render_camera(pos, yaw)
+        self._cached_img_rgb = img_rgb
+        self._cached_obstacle_present = self.det_fn(img_rgb)
+        self._cached_clearances = self._forward_left_right_clearances(yaw)
         obs = self._get_obs()
         reward, done, info = self._compute_reward_done(action)
         return StepReturn(obs, reward, done, info)
+
     def _spawn_obstacles(self):
         for _ in range(self.cfg.obstacle_count):
             x, y = self._rand_xy()
@@ -158,12 +173,18 @@ class UAVWorld:
         speed = float(np.linalg.norm(lin_vel))
         yaw_to_goal = float(np.arctan2(dy, dx) - yaw)
         yaw_to_goal = (yaw_to_goal + np.pi) % (2*np.pi) - np.pi
-        if self._drone is not None:
-            img_rgb = self._drone.camera_rgb()
+        # Use step-level cache if available (avoids re-render during step)
+        if self._cached_img_rgb is not None:
+            img_rgb = self._cached_img_rgb
+            obstacle_present = self._cached_obstacle_present
+            nearest_f, nearest_l, nearest_r = self._cached_clearances
         else:
-            img_rgb = self._render_camera(pos, yaw)
-        obstacle_present = self.det_fn(img_rgb)
-        nearest_f, nearest_l, nearest_r = self._forward_left_right_clearances(yaw)
+            if self._drone is not None:
+                img_rgb = self._drone.camera_rgb()
+            else:
+                img_rgb = self._render_camera(pos, yaw)
+            obstacle_present = self.det_fn(img_rgb)
+            nearest_f, nearest_l, nearest_r = self._forward_left_right_clearances(yaw)
         local_feats = compute_local_features(img_rgb)
         global_vec = np.array([dx,dy,dz, dist,lin_vel[0],lin_vel[1],lin_vel[2],roll,pitch,yaw,yaw_to_goal, speed], dtype=np.float32)
         alt_err = float(pos[2] - REW.alt_target)
@@ -202,7 +223,7 @@ class UAVWorld:
         yaw_to_goal = (yaw_to_goal + np.pi) % (2*np.pi) - np.pi
         heading_align = REW.w_heading * float(np.cos(yaw_to_goal))
         vel_to_goal = REW.w_vel_to_goal * float(np.dot(v, u_to_goal))
-        nearest_f, _, _ = self._forward_left_right_clearances(yaw)
+        nearest_f, _, _ = self._cached_clearances
         clearance_reward = REW.w_clearance * float(np.clip((nearest_f - REW.safe_clearance)/REW.safe_clearance, 0.0, 1.0))
         proximity_pen = -REW.p_proximity * float(np.clip((REW.safe_clearance - nearest_f)/REW.safe_clearance, 0.0, 1.0))
         jerk_pen = -REW.p_jerk * float(np.linalg.norm(v - self._last_vel))
@@ -216,7 +237,9 @@ class UAVWorld:
         ang_rate_pen = -REW.p_angular_rate * float(np.linalg.norm(ang_vel))
         time_pen = -REW.p_time
         control_pen = -REW.p_control
-        obstacle_present = self.det_fn(self._drone.camera_rgb() if self._drone is not None else self._render_camera(pos,yaw))
+        # Reuse cached values from step() - no second camera render or det_fn call
+        obstacle_present = self._cached_obstacle_present
+        nearest_f = self._cached_clearances[0]
         forward_like = False
         try:
             if self._drone is not None and 0 <= action_id < len(self._drone.ACTIONS):

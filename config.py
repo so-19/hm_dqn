@@ -3,11 +3,11 @@ import os
 @dataclass
 class EnvConfig:
     # Set to False to run headless (no window, faster).
-    gui: bool = True                    
+    gui: bool = False                    
     hz: int = 60           
     max_steps: int = 1200                
     world_size: float = 10.0    
-    obstacle_count: int = 25
+    obstacle_count: int = 10
     obstacle_min: float = 0.2
     obstacle_max: float = 0.8
     goal_radius: float = 0.35
@@ -25,14 +25,14 @@ class EnvConfig:
 @dataclass
 class RLConfig:
     gamma: float = 0.995                 
-    lr: float = 2e-4                    
-    batch_size: int = 128
-    buffer_size: int = 500_000
+    lr: float = 5e-4
+    batch_size: int = 64
+    buffer_size: int = 50_000
     target_tau: float = 0.005
     target_update_every: int = 500
     eps_start: float = 1.0
-    eps_end: float = 0.05
-    eps_decay_steps: int = 150_000  
+    eps_end: float = 0.10
+    eps_decay_steps: int = 5_000
     grad_clip: float = 10.0
     double_dqn: bool = True
     dueling: bool = True
@@ -42,9 +42,9 @@ class RLConfig:
 class MetaConfig:
     inner_lr: float = 1e-4               
     outer_lr: float = 5e-4  
-    inner_steps: int = 3               
-    tasks_per_batch: int = 6             
-    meta_iters: int = 800 
+    inner_steps: int = 10
+    tasks_per_batch: int = 4
+    meta_iters: int = 800
     tactical_steps_per_waypoint: int = 30
 
 @dataclass
@@ -53,7 +53,7 @@ class RewardConfig:
     w_heading: float = 0.4          
     w_vel_to_goal: float = 0.6        
     w_clearance: float = 0.25       
-    w_success: float = 15.0      
+    w_success: float = 25.0
     p_time: float = 1e-3        
     p_control: float = 5e-4      
     p_smooth: float = 0.02       
