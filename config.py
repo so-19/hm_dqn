@@ -32,7 +32,7 @@ class RLConfig:
     target_update_every: int = 500
     eps_start: float = 1.0
     eps_end: float = 0.10
-    eps_decay_steps: int = 5_000
+    eps_decay_steps: int = 1_500
     grad_clip: float = 10.0
     double_dqn: bool = True
     dueling: bool = True
@@ -42,9 +42,9 @@ class RLConfig:
 class MetaConfig:
     inner_lr: float = 1e-4               
     outer_lr: float = 5e-4  
-    inner_steps: int = 10
-    tasks_per_batch: int = 4
-    meta_iters: int = 800
+    inner_steps: int = 5
+    tasks_per_batch: int = 2
+    meta_iters: int = 200
     tactical_steps_per_waypoint: int = 30
 
 @dataclass
