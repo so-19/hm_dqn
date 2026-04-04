@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from detection.dino_detector import ObstacleDetector
 #from uav_hm_dqn.envs.pybullet_envs import make_task, AVOIDANCE_SET
-from envs import make_task, AVOIDANCE_SET
+from envs.pybullet_envs import make_task, AVOIDANCE_SET
 from rl.networks import StrategicDQN, TacticalDQN
 from rl.agents import DQNAgent
 from config import ENV, META, RL
@@ -12,7 +12,8 @@ from drone import Drone
 def specialize_and_run(metaH_path, metaL_path, episodes_specialize=2):
     detector = ObstacleDetector()
     env = make_task(seed=None, det_fn=detector, cfg=ENV)
-    H_in, L_in, nA = 12, 14, len(Drone.ACTIONS)
+    # H_in, L_in, nA = 12, 14, len(Drone.ACTIONS)
+    H_in, L_in, nA = 12, 14, 3
     qH = StrategicDQN(H_in, nA, dueling=RL.dueling)
     qL = TacticalDQN(L_in, nA, dueling=RL.dueling)
     qH.load_state_dict(torch.load(metaH_path, map_location="cpu"))
