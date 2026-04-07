@@ -6,8 +6,9 @@ opencv-python==4.11.0.86
 tqdm==4.67.1
 groundingdino-py==0.4.0
 timm>=0.9.7
-transformers==4.30.2
-huggingface-hub==0.16.4
+transformers>=4.39.0
+huggingface-hub>=0.20.0
 addict==2.4.0
 omegaconf==2.3.0
+tensorboard
 Pillow

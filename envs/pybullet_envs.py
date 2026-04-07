@@ -257,8 +257,8 @@ class UAVWorld:
         if d < self.cfg.goal_radius:
             success_bonus = REW.w_success
             done = True
-        if self.step_count >= self.cfg.max_steps or collided:
-            done = True
+        if self.step_count >= self.cfg.max_steps:
+            done = True  # collision still penalised (-8.0) but episode continues (soft collision)
         reward = float(
             progress + heading_align + vel_to_goal + clearance_reward + success_bonus
             + time_pen + control_pen + smooth_pen + jerk_pen + alt_pen + ang_rate_pen

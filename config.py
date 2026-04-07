@@ -5,12 +5,12 @@ class EnvConfig:
     # Set to False to run headless (no window, faster).
     gui: bool = False                    
     hz: int = 60           
-    max_steps: int = 1200                
-    world_size: float = 10.0    
-    obstacle_count: int = 10
+    max_steps: int = 300 #shorter episodes =more resets =more experience diversity
+    world_size: float = 5.0    
+    obstacle_count: int = 3 #curriculum start
     obstacle_min: float = 0.2
     obstacle_max: float = 0.8
-    goal_radius: float = 0.35
+    goal_radius: float = 1.0 #enlarged for easier initial successes
     proximity_thresh: float = 1.5
     camera_width: int = 128               
     camera_height: int = 128
@@ -32,7 +32,7 @@ class RLConfig:
     target_update_every: int = 500
     eps_start: float = 1.0
     eps_end: float = 0.10
-    eps_decay_steps: int = 1_500
+    eps_decay_steps: int = 3_000
     grad_clip: float = 10.0
     double_dqn: bool = True
     dueling: bool = True
@@ -42,7 +42,7 @@ class RLConfig:
 class MetaConfig:
     inner_lr: float = 1e-4               
     outer_lr: float = 5e-4  
-    inner_steps: int = 5
+    inner_steps: int = 10
     tasks_per_batch: int = 2
     meta_iters: int = 200
     tactical_steps_per_waypoint: int = 30

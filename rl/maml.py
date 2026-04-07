@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from rl.agents import DQNAgent
 from rl.networks import StrategicDQN, TacticalDQN
-from config import META
+from config import META, ENV
 from drone import Drone
 from envs.pybullet_envs import AVOIDANCE_SET
 from logging_utils import log_step, end_episode
@@ -77,7 +77,7 @@ def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0,
     start_time = time.time()
     torch.manual_seed(seed); np.random.seed(seed)
     H_in, L_in = obs_dims
-    nA = 3
+    nA = len(Drone.ACTIONS)
     print(f"\nStarting Meta-Learning Training")
     print(f"Configuration:")
     print(f"   - Meta iterations: {meta_cfg.meta_iters}")
@@ -98,6 +98,19 @@ def meta_train(task_maker, det_fn, obs_dims, meta_cfg=META, rl_cfg=None, seed=0,
     all_tact_losses = []
     all_rewards = []
     for it in range(meta_cfg.meta_iters):
+        #Curriculum Learning
+        if it == 0:
+            ENV.obstacle_count = 3
+            print(f"  [Curriculum] Obstacles: {ENV.obstacle_count}")
+        elif it == 50:
+            ENV.obstacle_count = 5
+            print(f"  [Curriculum] Obstacles increased to: {ENV.obstacle_count}")
+        elif it == 100:
+            ENV.obstacle_count = 8
+            print(f"  [Curriculum] Obstacles increased to: {ENV.obstacle_count}")
+        elif it == 150:
+            ENV.obstacle_count = 10
+            print(f"  [Curriculum] Obstacles increased to: {ENV.obstacle_count}")
         iter_start_time = time.time()
         print(f"\n Meta-Iteration {it+1}/{meta_cfg.meta_iters}")
         print("-" * 60)
