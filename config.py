@@ -6,7 +6,7 @@ class EnvConfig:
     gui: bool = False                    
     hz: int = 60           
     max_steps: int = 300 #shorter episodes =more resets =more experience diversity
-    world_size: float = 5.0    
+    world_size: float = 8.0    
     obstacle_count: int = 3 #curriculum start
     obstacle_min: float = 0.2
     obstacle_max: float = 0.8
@@ -53,14 +53,14 @@ class RewardConfig:
     w_heading: float = 0.4          
     w_vel_to_goal: float = 0.6        
     w_clearance: float = 0.25       
-    w_success: float = 25.0
+    w_success: float = 80.0
     p_time: float = 1e-3        
     p_control: float = 5e-4      
     p_smooth: float = 0.02       
     p_jerk: float = 0.01            
     p_alt: float = 0.25             
     p_angular_rate: float = 0.02    
-    p_collision: float = 8.0
+    p_collision: float = 0.3 # soft-collision mode: small per-step penalty
     p_proximity: float = 0.8         
     p_bad_forward_with_obst: float = 1.2
     safe_clearance: float = 2.0
