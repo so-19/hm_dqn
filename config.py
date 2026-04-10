@@ -61,7 +61,7 @@ class RewardConfig:
     p_alt: float = 0.25             
     p_angular_rate: float = 0.02    
     p_collision: float = 0.3 # soft-collision mode: small per-step penalty
-    p_proximity: float = 0.8         
+    p_proximity: float = 0.1 # reduced from 0.8
     p_bad_forward_with_obst: float = 1.2
     safe_clearance: float = 2.0
     alt_target: float = 1.0

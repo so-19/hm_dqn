@@ -264,7 +264,12 @@ class UAVWorld:
             + time_pen + control_pen + smooth_pen + jerk_pen + alt_pen + ang_rate_pen
             + proximity_pen + collision_pen + bad_forward_pen
         )
-        info = dict(dist=d, progress=progress, heading=heading_align, vgoal=vel_to_goal,clearance=clearance_reward, prox_pen=proximity_pen, smooth_pen=smooth_pen,jerk_pen=jerk_pen, alt_pen=alt_pen, ang_rate_pen=ang_rate_pen,bad_forward_pen=bad_forward_pen, collided=collided)
+        reached_goal = bool(success_bonus > 0)
+        info = dict(dist=d, progress=progress, heading=heading_align, vgoal=vel_to_goal,
+                    clearance=clearance_reward, prox_pen=proximity_pen, smooth_pen=smooth_pen,
+                    jerk_pen=jerk_pen, alt_pen=alt_pen, ang_rate_pen=ang_rate_pen,
+                    bad_forward_pen=bad_forward_pen, collided=collided,
+                    success=reached_goal)
         return reward, done, info
     def _rand_xy(self):
         s = self.cfg.world_size
