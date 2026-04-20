@@ -24,45 +24,45 @@ class EnvConfig:
 
 @dataclass
 class RLConfig:
-    gamma: float = 0.995                 
-    lr: float = 5e-4
+    gamma: float = 0.995
+    lr: float = 1e-4
     batch_size: int = 64
     buffer_size: int = 50_000
     target_tau: float = 0.005
-    target_update_every: int = 500
+    target_update_every: int = 200
     eps_start: float = 1.0
     eps_end: float = 0.10
     eps_decay_steps: int = 3_000
-    grad_clip: float = 10.0
+    grad_clip: float = 1.0
     double_dqn: bool = True
     dueling: bool = True
-    n_step: int = 3      
+    n_step: int = 3
 
 @dataclass
 class MetaConfig:
     inner_lr: float = 1e-4               
     outer_lr: float = 5e-4  
-    inner_steps: int = 10
+    inner_steps: int = 5
     tasks_per_batch: int = 2
     meta_iters: int = 200
     tactical_steps_per_waypoint: int = 30
 
 @dataclass
 class RewardConfig:
-    w_potential: float = 1.6         
-    w_heading: float = 0.4          
-    w_vel_to_goal: float = 0.6        
-    w_clearance: float = 0.25       
-    w_success: float = 80.0
-    p_time: float = 1e-3        
-    p_control: float = 5e-4      
-    p_smooth: float = 0.02       
-    p_jerk: float = 0.01            
-    p_alt: float = 0.25             
-    p_angular_rate: float = 0.02    
-    p_collision: float = 0.3 # soft-collision mode: small per-step penalty
-    p_proximity: float = 0.1 # reduced from 0.8
-    p_bad_forward_with_obst: float = 1.2
+    w_potential: float = 0.2
+    w_heading: float = 0.05
+    w_vel_to_goal: float = 0.08
+    w_clearance: float = 0.03
+    w_success: float = 10.0
+    p_time: float = 1e-4
+    p_control: float = 5e-5
+    p_smooth: float = 0.003
+    p_jerk: float = 0.001
+    p_alt: float = 0.03
+    p_angular_rate: float = 0.003
+    p_collision: float = 0.04
+    p_proximity: float = 0.01
+    p_bad_forward_with_obst: float = 0.15
     safe_clearance: float = 2.0
     alt_target: float = 1.0
     use_shaping: bool = True

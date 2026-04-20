@@ -52,7 +52,13 @@ class UAVWorld:
         _ = p.loadURDF("plane.urdf")
         self._spawn_obstacles()
         self._spawn_drone()
-        self.goal = self._rand_point_xy(z=1.0)
+        drone_pos, _ = p.getBasePositionAndOrientation(self._drone_body)
+        min_start_dist = self.cfg.goal_radius + 1.5
+        for _ in range(50):
+            g = self._rand_point_xy(z=1.0)
+            if np.linalg.norm(np.array(g[:2]) - np.array(drone_pos[:2])) >= min_start_dist:
+                break
+        self.goal = g
         self._spawn_goal_visual(self.goal)
         self.step_count = 0
         self._last_action = None
