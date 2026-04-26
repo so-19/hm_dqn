@@ -10,7 +10,7 @@ class EnvConfig:
     obstacle_count: int = 3 #curriculum start
     obstacle_min: float = 0.2
     obstacle_max: float = 0.8
-    goal_radius: float = 1.0 #enlarged for easier initial successes
+    goal_radius: float = 1.5#enlarged
     proximity_thresh: float = 1.5
     camera_width: int = 128               
     camera_height: int = 128
@@ -32,7 +32,7 @@ class RLConfig:
     target_update_every: int = 200
     eps_start: float = 1.0
     eps_end: float = 0.10
-    eps_decay_steps: int = 3_000
+    eps_decay_steps: int = 750
     grad_clip: float = 1.0
     double_dqn: bool = True
     dueling: bool = True
@@ -49,18 +49,18 @@ class MetaConfig:
 
 @dataclass
 class RewardConfig:
-    w_potential: float = 0.2
-    w_heading: float = 0.05
-    w_vel_to_goal: float = 0.08
-    w_clearance: float = 0.03
-    w_success: float = 10.0
-    p_time: float = 1e-4
+    w_potential: float = 1.0
+    w_heading: float = 0.02
+    w_vel_to_goal: float = 0.03
+    w_clearance: float = 0.01
+    w_success: float = 50.0
+    p_time: float = 5e-3
     p_control: float = 5e-5
     p_smooth: float = 0.003
     p_jerk: float = 0.001
     p_alt: float = 0.03
     p_angular_rate: float = 0.003
-    p_collision: float = 0.04
+    p_collision: float = 0.05
     p_proximity: float = 0.01
     p_bad_forward_with_obst: float = 0.15
     safe_clearance: float = 2.0
